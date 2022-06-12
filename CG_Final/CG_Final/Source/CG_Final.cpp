@@ -40,7 +40,6 @@ void draw(void)
     rotateMat = rotateMat * rotate(rotateMat, _rotate_y, vec3(1, 0, 0));
     mat4 model = translateMat * rotateMat;
     glUniformMatrix4fv(uniformModel, 1, GL_FALSE, value_ptr(model));
-
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     if (_displayPoint)
@@ -58,8 +57,7 @@ void GL_Display(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glTranslatef(0.0f, 0.0f, -_zoom);
-    glTranslatef(_translate_x, _translate_y, _zoom);
+    glTranslatef(_translate_x, _translate_y, -_zoom);
     glRotatef(_rotate_x, 0, 1, 0);
     glRotatef(_rotate_y, 1, 0, 0);
 
@@ -93,8 +91,8 @@ void GL_Motion(int x, int y)
         _zoom -= (float)0.05f * diff_x;
     }
     else if (_btnStates[0]) {
-        _rotate_x += (float)0.5f * diff_x;
-        _rotate_y += (float)0.5f * diff_y;
+        _rotate_x += (float)0.05f * diff_x;
+        _rotate_y += (float)0.05f * diff_y;
     }
     else if (_btnStates[1]) {
         _translate_x += (float)0.05f * diff_x;
@@ -243,39 +241,7 @@ void initGLEW()
         exit(0);
     }
 }
-GLuint v, f, p;
-void setShaders()
-{
-    char* vs = NULL, * fs = NULL, * fs2 = NULL;
 
-    v = glCreateShader(GL_VERTEX_SHADER);
-    f = glCreateShader(GL_FRAGMENT_SHADER);
-
-    vs = textFileRead("Shader/minimal.vert");
-    fs = textFileRead("Shader/minimal.frag");
-
-    const char* vv = vs;
-    const char* ff = fs;
-
-    glShaderSource(v, 1, &vv, NULL);
-    glShaderSource(f, 1, &ff, NULL);
-
-    free(vs); free(fs);
-
-    glCompileShader(v);
-    glCompileShader(f);
-
-    p = glCreateProgram();
-    glAttachShader(p, v);
-    glAttachShader(p, f);
-
-    glLinkProgram(p);
-
-    glUseProgram(p);
-
-    uniformModel = glGetUniformLocation(p, "model");
-    uniformView = glGetUniformLocation(p, "camera");
-}
 int printOglError(char* file, int line)
 {
     GLenum glErr;
@@ -324,6 +290,43 @@ void printProgramInfoLog(GLuint obj)
         free(infoLog);
     }
 }
+
+GLuint v, f, p;
+void setShaders(const char* vertexFilePath, const char* fragmentFilePath)
+{
+    char* vs = NULL, * fs = NULL, * fs2 = NULL;
+
+    v = glCreateShader(GL_VERTEX_SHADER);
+    f = glCreateShader(GL_FRAGMENT_SHADER);
+
+    vs = textFileRead(vertexFilePath);
+    fs = textFileRead(fragmentFilePath);
+
+    const char* vv = vs;
+    const char* ff = fs;
+
+    glShaderSource(v, 1, &vv, NULL);
+    glShaderSource(f, 1, &ff, NULL);
+
+    free(vs); free(fs);
+
+    glCompileShader(v);
+    glCompileShader(f);
+    printShaderInfoLog(v);
+    printShaderInfoLog(f);
+
+    p = glCreateProgram();
+    glAttachShader(p, v);
+    glAttachShader(p, f);
+
+    glLinkProgram(p);
+    printProgramInfoLog(p);
+
+    glUseProgram(p);
+
+    uniformModel = glGetUniformLocation(p, "model");
+    uniformView = glGetUniformLocation(p, "camera");
+}
 int main()
 {
     _mesh = new Mesh("obj\\obj_1.obj");
@@ -338,7 +341,7 @@ int main()
     glutMotionFunc(GL_Motion);
     glutKeyboardFunc(GL_Keyboard);
     initGLEW();
-    setShaders();
+    setShaders("Shader/minimal.vert", "Shader/minimal.frag");
     Init();
 
     char* vs = NULL, * fs = NULL, * fs2 = NULL;

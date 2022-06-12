@@ -36,7 +36,7 @@ void Mesh::LoadObj(const char* file)
 	
 	fclose(fp);
 
-	MoveToCenter(minBound, maxBound, 1.0);
+	MoveToCenter(minBound, maxBound, 5.0f);
 	ComputeNeighbor();
 	ComputeNormal();
 	ComputeQEM();
