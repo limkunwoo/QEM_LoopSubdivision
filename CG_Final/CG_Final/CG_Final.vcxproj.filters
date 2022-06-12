@@ -60,4 +60,12 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\minimal.frag">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\minimal.vert">
+      <Filter>Shader</Filter>
+    </None>
+  </ItemGroup>
 </Project>

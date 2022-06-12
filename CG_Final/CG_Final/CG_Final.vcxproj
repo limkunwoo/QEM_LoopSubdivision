@@ -90,7 +90,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>./include; ./</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./include; ./include/GLM; ./</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -168,6 +168,10 @@
     <ClInclude Include="Header\Vector3.h" />
     <ClInclude Include="Header\vectorExtension.h" />
     <ClInclude Include="Header\Vertex.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\minimal.frag" />
+    <None Include="Shader\minimal.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

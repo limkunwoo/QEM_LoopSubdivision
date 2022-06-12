@@ -2,5 +2,5 @@
 // www.lighthouse3d.com
 void main()
 {
-	gl_FragColor = gl_Color;
+	gl_FragColor = vec4(1.0f,1.0f,0.0f,0.0f);
 }

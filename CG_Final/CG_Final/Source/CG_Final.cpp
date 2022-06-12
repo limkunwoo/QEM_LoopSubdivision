@@ -4,9 +4,14 @@
 #include <iostream>
 #include <GL/glew.h>
 #include <GL/glut.h>
-#include "Header\Mesh.h"
-#include "Header\textfile.h"
+#include "Header/Mesh.h"
+#include "Header/textfile.h"
+#include <GLM/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <Windows.h>
+
+using namespace glm;
 
 float _zoom = 15.0f;
 float _rotate_x = 0;
@@ -25,9 +30,16 @@ void Init(void)
 {
     glEnable(GL_DEPTH_TEST);
 }
-
+GLuint uniformModel, uniformView;
 void draw(void)
 {
+    mat4 translateMat = mat4(1.0f);
+    translateMat = translate(translateMat, vec3(_translate_x, _translate_y, -_zoom));
+    mat4 rotateMat = mat4(1.0f);
+    rotateMat = rotate(rotateMat, _rotate_x, vec3(0, 1, 0));
+    rotateMat = rotateMat * rotate(rotateMat, _rotate_y, vec3(1, 0, 0));
+    mat4 model = translateMat * rotateMat;
+    glUniformMatrix4fv(uniformModel, 1, GL_FALSE, value_ptr(model));
 
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
@@ -47,7 +59,7 @@ void GL_Display(void)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glTranslatef(0.0f, 0.0f, -_zoom);
-    glTranslatef(_translate_x, _translate_y, 0.0f);
+    glTranslatef(_translate_x, _translate_y, _zoom);
     glRotatef(_rotate_x, 0, 1, 0);
     glRotatef(_rotate_y, 1, 0, 0);
 
@@ -60,6 +72,10 @@ void GL_Reshape(int w, int h)
         h = 1;
     }
     glViewport(0, 0, w, h);
+    mat4 cameraMat = mat4(1.0f);
+    cameraMat = perspective(45.0f, (float)w / (float)h, 0.1f, 100.0f);
+    glUniformMatrix4fv(uniformView, 1, GL_FALSE, value_ptr(cameraMat));
+
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(45.0f, (float)w / (float)h, 0.1f, 100.0f);
@@ -235,8 +251,8 @@ void setShaders()
     v = glCreateShader(GL_VERTEX_SHADER);
     f = glCreateShader(GL_FRAGMENT_SHADER);
 
-    vs = textFileRead("minimal.vert");
-    fs = textFileRead("minimal.frag");
+    vs = textFileRead("Shader/minimal.vert");
+    fs = textFileRead("Shader/minimal.frag");
 
     const char* vv = vs;
     const char* ff = fs;
@@ -256,6 +272,9 @@ void setShaders()
     glLinkProgram(p);
 
     glUseProgram(p);
+
+    uniformModel = glGetUniformLocation(p, "model");
+    uniformView = glGetUniformLocation(p, "camera");
 }
 int printOglError(char* file, int line)
 {

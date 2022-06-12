@@ -2,5 +2,5 @@
 // www.lighthouse3d.com
 void main()
 {
-	//gl_FragColor = gl_Color;
+	gl_FragColor = gl_Color;
 }
