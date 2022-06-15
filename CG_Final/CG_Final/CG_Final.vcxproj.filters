@@ -27,6 +27,9 @@
     <ClCompile Include="Source\textfile.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Source\myShader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\Cost.h">
@@ -59,12 +62,18 @@
     <ClInclude Include="Header\textfile.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="myShader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\minimal.frag">
       <Filter>Shader</Filter>
     </None>
     <None Include="Shader\minimal.vert">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\structVert.vert">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

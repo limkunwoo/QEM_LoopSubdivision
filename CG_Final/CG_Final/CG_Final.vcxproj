@@ -155,6 +155,7 @@
   <ItemGroup>
     <ClCompile Include="Source\CG_Final.cpp" />
     <ClCompile Include="Source\Mesh.cpp" />
+    <ClCompile Include="Source\myShader.cpp" />
     <ClCompile Include="Source\textfile.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -168,10 +169,12 @@
     <ClInclude Include="Header\Vector3.h" />
     <ClInclude Include="Header\vectorExtension.h" />
     <ClInclude Include="Header\Vertex.h" />
+    <ClInclude Include="myShader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\minimal.frag" />
     <None Include="Shader\minimal.vert" />
+    <None Include="Shader\structVert.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -68,6 +68,7 @@ void Mesh::DrawPoint(void)
 	glBegin(GL_POINTS);
 	for (auto v : _vertices)
 	{
+		glNormal3f(1.f, 1.f, 0.f);
 		auto pos = v->_pos;
 		glVertex3f(pos.x(), pos.y(), pos.z());
 	}
@@ -100,6 +101,7 @@ void Mesh::DrawEdge(void)
 	{
 		glBegin(GL_LINES);
 		glColor3f(1.0f, 0.0f, 0.0f);
+		glNormal3f(1.f, 1.f, 0.f);
 		glVertex3f(e->_vertices[0]->x(), e->_vertices[0]->y(), e->_vertices[0]->z());
 		glVertex3f(e->_vertices[1]->x(), e->_vertices[1]->y(), e->_vertices[1]->z());
 		glEnd();

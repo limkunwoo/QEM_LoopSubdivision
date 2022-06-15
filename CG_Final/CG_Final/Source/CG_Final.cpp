@@ -6,6 +6,7 @@
 #include <GL/glut.h>
 #include "Header/Mesh.h"
 #include "Header/textfile.h"
+#include "Header/myShader.h"
 #include <GLM/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -20,7 +21,14 @@ float _translate_x = 0.0f;
 float _translate_y = 0.0f;
 int last_x = 0;
 int last_y = 0;
+float _viewportX = 640.f;
+float _viewportY = 480.f;
+
 Mesh* _mesh;
+myShader _faceShader;
+myShader _structureShader;
+vec3 cameraPosition = vec3(0,0,10);
+
 bool _displayPoint = false;
 bool _displayWire = false;
 bool _displaySurface = true;
@@ -30,7 +38,6 @@ void Init(void)
 {
     glEnable(GL_DEPTH_TEST);
 }
-GLuint uniformModel, uniformView;
 void draw(void)
 {
     mat4 translateMat = mat4(1.0f);
@@ -39,17 +46,35 @@ void draw(void)
     rotateMat = rotate(rotateMat, _rotate_x, vec3(0, 1, 0));
     rotateMat = rotateMat * rotate(rotateMat, _rotate_y, vec3(1, 0, 0));
     mat4 model = translateMat * rotateMat;
-    glUniformMatrix4fv(uniformModel, 1, GL_FALSE, value_ptr(model));
+
+    mat4 projectionMat = mat4(1.0f);
+    projectionMat = perspective(45.0f, _viewportX / _viewportY, 0.1f, 100.0f);
+    
+    mat4 viewMat = mat4(1.0f);
+    viewMat = inverse(translate(viewMat, cameraPosition));
+
+    _faceShader.Begin();
+    _faceShader.SetUniformMatrix4("projection", projectionMat);
+    _faceShader.SetUniformMatrix4("model", model);
+    _faceShader.SetUniformMatrix4("view", viewMat);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
-    if (_displayPoint)
-        _mesh->DrawPoint();
     if (_displaySurface)
         _mesh->DrawFace();
+    _faceShader.end();
+
+    _structureShader.Begin();
+    _structureShader.SetUniformMatrix4("projection", projectionMat);
+    _structureShader.SetUniformMatrix4("model", model);
+    _structureShader.SetUniformMatrix4("view", viewMat);
+
+    if (_displayPoint)
+        _mesh->DrawPoint();
     if (_displayWire)
         _mesh->DrawEdge();
+    _structureShader.end();
     glDisable(GL_LIGHTING);
-
+    
 }
 
 void GL_Display(void)
@@ -69,14 +94,14 @@ void GL_Reshape(int w, int h)
     if (w == 0) {
         h = 1;
     }
-    glViewport(0, 0, w, h);
-    mat4 cameraMat = mat4(1.0f);
-    cameraMat = perspective(45.0f, (float)w / (float)h, 0.1f, 100.0f);
-    glUniformMatrix4fv(uniformView, 1, GL_FALSE, value_ptr(cameraMat));
-
+    _viewportX = w;
+    _viewportY = h;
+    glViewport(0, 0, _viewportX, _viewportY);
+    
+    //glUniformMatrix4fv(uniformView, 1, GL_FALSE, value_ptr(projectionMat));
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45.0f, (float)w / (float)h, 0.1f, 100.0f);
+    gluPerspective(45.0f, (float)_viewportX / (float)_viewportY, 0.1f, 100.0f);
     glMatrixMode(GL_MODELVIEW);
 }
 void GL_Motion(int x, int y)
@@ -91,8 +116,8 @@ void GL_Motion(int x, int y)
         _zoom -= (float)0.05f * diff_x;
     }
     else if (_btnStates[0]) {
-        _rotate_x += (float)0.05f * diff_x;
-        _rotate_y += (float)0.05f * diff_y;
+        _rotate_x += (float)0.005f * diff_x;
+        _rotate_y += (float)0.005f * diff_y;
     }
     else if (_btnStates[1]) {
         _translate_x += (float)0.05f * diff_x;
@@ -241,92 +266,6 @@ void initGLEW()
         exit(0);
     }
 }
-
-int printOglError(char* file, int line)
-{
-    GLenum glErr;
-    int    retCode = 0;
-
-    glErr = glGetError();
-    while (glErr != GL_NO_ERROR)
-    {
-        printf("glError in file %s @ line %d: %s\n", file, line, gluErrorString(glErr));
-        retCode = 1;
-        glErr = glGetError();
-    }
-    return retCode;
-}
-
-void printShaderInfoLog(GLuint obj)
-{
-    int infologLength = 0;
-    int charsWritten = 0;
-    char* infoLog;
-
-    glGetShaderiv(obj, GL_INFO_LOG_LENGTH, &infologLength);
-
-    if (infologLength > 0)
-    {
-        infoLog = (char*)malloc(infologLength);
-        glGetShaderInfoLog(obj, infologLength, &charsWritten, infoLog);
-        printf("%s\n", infoLog);
-        free(infoLog);
-    }
-}
-
-void printProgramInfoLog(GLuint obj)
-{
-    int infologLength = 0;
-    int charsWritten = 0;
-    char* infoLog;
-
-    glGetProgramiv(obj, GL_INFO_LOG_LENGTH, &infologLength);
-
-    if (infologLength > 0)
-    {
-        infoLog = (char*)malloc(infologLength);
-        glGetProgramInfoLog(obj, infologLength, &charsWritten, infoLog);
-        printf("%s\n", infoLog);
-        free(infoLog);
-    }
-}
-
-GLuint v, f, p;
-void setShaders(const char* vertexFilePath, const char* fragmentFilePath)
-{
-    char* vs = NULL, * fs = NULL, * fs2 = NULL;
-
-    v = glCreateShader(GL_VERTEX_SHADER);
-    f = glCreateShader(GL_FRAGMENT_SHADER);
-
-    vs = textFileRead(vertexFilePath);
-    fs = textFileRead(fragmentFilePath);
-
-    const char* vv = vs;
-    const char* ff = fs;
-
-    glShaderSource(v, 1, &vv, NULL);
-    glShaderSource(f, 1, &ff, NULL);
-
-    free(vs); free(fs);
-
-    glCompileShader(v);
-    glCompileShader(f);
-    printShaderInfoLog(v);
-    printShaderInfoLog(f);
-
-    p = glCreateProgram();
-    glAttachShader(p, v);
-    glAttachShader(p, f);
-
-    glLinkProgram(p);
-    printProgramInfoLog(p);
-
-    glUseProgram(p);
-
-    uniformModel = glGetUniformLocation(p, "model");
-    uniformView = glGetUniformLocation(p, "camera");
-}
 int main()
 {
     _mesh = new Mesh("obj\\obj_1.obj");
@@ -341,7 +280,9 @@ int main()
     glutMotionFunc(GL_Motion);
     glutKeyboardFunc(GL_Keyboard);
     initGLEW();
-    setShaders("Shader/minimal.vert", "Shader/minimal.frag");
+    //setShaders("Shader/minimal.vert", "Shader/minimal.frag");
+    _faceShader.CreateShader("Shader/minimal.vert", "Shader/minimal.frag");
+    _structureShader.CreateShader("Shader/structVert.vert", "Shader/minimal.frag");
     Init();
 
     char* vs = NULL, * fs = NULL, * fs2 = NULL;
