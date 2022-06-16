@@ -27,8 +27,6 @@ float _viewportY = 480.f;
 Mesh* _mesh;
 myShader _faceShader;
 myShader _structureShader;
-vec3 cameraPosition = vec3(0,0,10);
-
 bool _displayPoint = false;
 bool _displayWire = false;
 bool _displaySurface = true;
@@ -40,6 +38,7 @@ void Init(void)
 }
 void draw(void)
 {
+    printf("translate : %.2f %.2f %.2f\n", _translate_x, _translate_y, -_zoom);
     mat4 translateMat = mat4(1.0f);
     translateMat = translate(translateMat, vec3(_translate_x, _translate_y, -_zoom));
     mat4 rotateMat = mat4(1.0f);
@@ -50,8 +49,16 @@ void draw(void)
     mat4 projectionMat = mat4(1.0f);
     projectionMat = perspective(45.0f, _viewportX / _viewportY, 0.1f, 100.0f);
     
+    vec3 cameraPosition = vec3(0, 0, 1);
+    vec3 cameraRotate = vec3(0, 0, 0);
     mat4 viewMat = mat4(1.0f);
-    viewMat = inverse(translate(viewMat, cameraPosition));
+    mat4 cameraTransform = mat4(1.0f);
+    mat4 cameraTranslateMat = mat4(1.0f);
+    mat4 cameraRotateMat = mat4(1.0f);
+    cameraTranslateMat = translate(cameraTranslateMat, cameraPosition);
+    cameraRotateMat = glm::rotate(cameraRotateMat, 0.f, vec3(0, 1, 0));
+    cameraTransform = cameraTranslateMat * cameraRotateMat;
+    viewMat = inverse(cameraTransform);
 
     _faceShader.Begin();
     _faceShader.SetUniformMatrix4("projection", projectionMat);

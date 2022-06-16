@@ -1,16 +1,1 @@
-﻿  CG_Final.cpp
-C:\Users\topgu\OneDrive\DOCUME~1-DESKTOP-C5EQGFI-11\GitHub\QEM_LoopSubdivision\CG_Final\CG_Final\Header\Edge.h(23,1): warning C4150: 불완전한 형식 'Cost'에 대한 포인터를 삭제했습니다. 소멸자가 호출되지 않습니다.
-C:\Users\topgu\OneDrive\DOCUME~1-DESKTOP-C5EQGFI-11\GitHub\QEM_LoopSubdivision\CG_Final\CG_Final\Header\Edge.h(3): message : 'Cost' 선언을 참조하십시오.
-C:\Users\topgu\OneDrive\DOCUME~1-DESKTOP-C5EQGFI-11\GitHub\QEM_LoopSubdivision\CG_Final\CG_Final\Header\vectorExtension.h(21,20): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-C:\Users\topgu\OneDrive\DOCUME~1-DESKTOP-C5EQGFI-11\GitHub\QEM_LoopSubdivision\CG_Final\CG_Final\Header\Face.h(26): message : 컴파일되는 함수 템플릿 인스턴스화 'int GetIndex<Vertex>(std::vector<Vertex *,std::allocator<Vertex *>> &,T *)'에 대한 참조를 확인하세요.
-          with
-          [
-              T=Vertex
-          ]
-C:\Users\topgu\OneDrive\DOCUME~1-DESKTOP-C5EQGFI-11\GitHub\QEM_LoopSubdivision\CG_Final\CG_Final\Header\vectorExtension.h(11,20): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-C:\Users\topgu\OneDrive\DOCUME~1-DESKTOP-C5EQGFI-11\GitHub\QEM_LoopSubdivision\CG_Final\CG_Final\Header\Face.h(29): message : 컴파일되는 함수 템플릿 인스턴스화 'bool IsContain<Vertex>(std::vector<Vertex *,std::allocator<Vertex *>> &,T *)'에 대한 참조를 확인하세요.
-          with
-          [
-              T=Vertex
-          ]
-  CG_Final.vcxproj -> C:\Users\topgu\OneDrive\DOCUME~1-DESKTOP-C5EQGFI-11\GitHub\QEM_LoopSubdivision\CG_Final\Debug\CG_Final.exe
+﻿  CG_Final.vcxproj -> C:\Users\lkw3104\Documents\GitHub\QEM_LoopSubdivision\CG_Final\Debug\CG_Final.exe

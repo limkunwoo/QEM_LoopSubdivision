@@ -14,5 +14,5 @@ void main()
 	gl_FrontColor = gl_Color;
 	normal = model * vec4(gl_Normal, 0);
 	//normal = (transpose(inverse(mat3(model)))) * gl_Normal;
-	position = gl_Vertex;
+	position = model * gl_Vertex;
 }
