@@ -5,6 +5,7 @@
 #include <fstream>
 #include <algorithm>
 #include <queue>
+#include <sstream>
 #include <set>
 
 class Mesh
@@ -21,6 +22,7 @@ public:
 	}
 public:
 	void LoadObj(const char* file);
+	void LoadPly(const char* file);
 	void MoveToCenter(Vec3<double> minBound, Vec3<double> maxBound, double scale);
 	void DrawPoint(void);
 	void DrawFace(void);

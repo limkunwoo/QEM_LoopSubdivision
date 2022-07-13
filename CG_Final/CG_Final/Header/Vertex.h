@@ -11,6 +11,11 @@ class Vertex
 public:
 	int _index;
 	Vec3<double> _pos;
+	Vec3<double> _color;
+	Vec3<double> _normal;
+	double _u;
+	double _v;
+
 	bool _edgeComputed;
 
 	vector<Vertex*> _nbVertices;
@@ -24,6 +29,7 @@ public:
 		_pos = pos;
 		_edgeComputed = false;
 	}
+	
 public:
 	void ClearNeighbor() {
 		_nbVertices.clear();

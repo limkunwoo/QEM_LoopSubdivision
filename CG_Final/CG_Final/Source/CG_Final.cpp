@@ -123,8 +123,8 @@ void GL_Motion(int x, int y)
         _zoom -= (float)0.05f * diff_x;
     }
     else if (_btnStates[0]) {
-        _rotate_x += (float)0.005f * diff_x;
-        _rotate_y += (float)0.005f * diff_y;
+        _rotate_x += (float)0.05f * diff_x;
+        _rotate_y += (float)0.05f * diff_y;
     }
     else if (_btnStates[1]) {
         _translate_x += (float)0.05f * diff_x;
@@ -276,7 +276,7 @@ void initGLEW()
 int main()
 {
     _mesh = new Mesh("obj\\obj_1.obj");
-
+    _mesh->LoadPly("obj\\shield.ply");
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
     glutInitWindowSize(640, 480);
     glutInitWindowPosition(100, 100);
@@ -288,8 +288,8 @@ int main()
     glutKeyboardFunc(GL_Keyboard);
     initGLEW();
     //setShaders("Shader/minimal.vert", "Shader/minimal.frag");
-    _faceShader.CreateShader("Shader/minimal.vert", "Shader/minimal.frag");
-    _structureShader.CreateShader("Shader/structVert.vert", "Shader/minimal.frag");
+    //_faceShader.CreateShader("Shader/minimal.vert", "Shader/minimal.frag");
+    //_structureShader.CreateShader("Shader/structVert.vert", "Shader/minimal.frag");
     Init();
 
     char* vs = NULL, * fs = NULL, * fs2 = NULL;

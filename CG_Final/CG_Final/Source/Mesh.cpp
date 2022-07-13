@@ -1,4 +1,5 @@
 #include "..\Header\Mesh.h"
+
 void Mesh::LoadObj(const char* file)
 {
 	Clear();
@@ -35,6 +36,130 @@ void Mesh::LoadObj(const char* file)
 	}
 	
 	fclose(fp);
+
+	MoveToCenter(minBound, maxBound, 5.0f);
+	ComputeNeighbor();
+	ComputeNormal();
+	ComputeQEM();
+}
+
+void Mesh::LoadPly(const char* file)
+{
+	Clear();
+	string filename(file);
+	vector<string> lines;
+	string line;
+
+	ifstream inputFile(filename);
+	if (!inputFile.is_open()) {
+		cerr << "Could not open file : '" << filename << "'" << endl;
+		return;
+	}
+	while (getline(inputFile, line))
+	{
+		lines.push_back(line);
+	}
+	int numVertex = 0;
+	int numFace = 0;
+	Vec3<double> minBound, maxBound;
+	minBound.Set(DBL_MAX);
+	maxBound.Set(DBL_MIN);
+	//tmp
+	int numProperty = 12;
+	
+	int lineSequence = -1;
+	for (lineSequence = 0; lineSequence < lines.size(); ++lineSequence)
+	{
+		istringstream iss(lines[lineSequence]);
+		string buffer;
+		vector<string> splited;
+
+		while (getline(iss, buffer, ' '))
+		{
+			splited.push_back(buffer);
+		}
+		if (splited[0] == "element")
+		{
+			if (splited[1] == "vertex")
+				numVertex = stoi(splited[2]);
+			if (splited[1] == "face")
+				numFace = stoi(splited[2]);
+		}
+		if (splited[0] == "comment")
+		{
+			continue;
+		}
+		if (splited[0] == "end_header")
+		{
+			break;
+		}
+	}
+	int vId = 0;
+	for (; numVertex; --numVertex)
+	{
+		++lineSequence;
+		istringstream iss(lines[lineSequence]);
+		string buffer;
+		vector<string> splited;
+
+		while (getline(iss, buffer, ' '))
+		{
+			splited.push_back(buffer);
+		}
+
+		Vec3<double> pos;
+		pos[0] = stod(splited[0]);
+		pos[1] = stod(splited[1]);
+		pos[2] = stod(splited[2]);
+
+		if (minBound[0] > pos[0])	minBound[0] = pos[0];
+		if (minBound[1] > pos[1])	minBound[1] = pos[1];
+		if (minBound[2] > pos[2])	minBound[2] = pos[2];
+		if (maxBound[0] < pos[0])	maxBound[0] = pos[0];
+		if (maxBound[1] < pos[1])	maxBound[1] = pos[1];
+		if (maxBound[2] < pos[2])	maxBound[2] = pos[2];
+
+		Vec3<double> color;
+		color[0] = stod(splited[3]);
+		color[1] = stod(splited[4]);
+		color[2] = stod(splited[5]);
+
+		Vec3<double> normal;
+		normal[0] = stod(splited[7]);
+		normal[1] = stod(splited[8]);
+		normal[2] = stod(splited[9]);
+
+		Vertex* vertex = new Vertex(vId++, pos);
+		vertex->_color = color;
+		vertex->_normal = normal;
+		vertex->_u = stod(splited[10]);
+		vertex->_v = stod(splited[11]);
+		_vertices.push_back(vertex);
+	}
+	int fid = 0;
+	for (; numFace; --numFace)
+	{
+		++lineSequence;
+
+		istringstream iss(lines[lineSequence]);
+		string buffer;
+		vector<string> splited;
+
+		while (getline(iss, buffer, ' '))
+		{
+			splited.push_back(buffer);
+		}
+
+		if (splited[0] == "3")
+		{
+			int idx1 = stoi(splited[1]);
+			int idx2 = stoi(splited[2]);
+			int idx3 = stoi(splited[3]);
+
+			_faces.push_back(new Face(fid++, _vertices[idx1], _vertices[idx2], _vertices[idx3]));
+		}
+	}
+	inputFile.close();
 
 	MoveToCenter(minBound, maxBound, 5.0f);
 	ComputeNeighbor();
